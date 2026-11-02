@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVOX AI Control Room</title>
+<style>
+:root{--bg:#0a1020;--panel:#111a2e;--panel2:#0e1729;--line:#24324c;--text:#edf3ff;--muted:#94a5c4;--blue:#6ea8fe;--green:#42d392;--amber:#f7c66a;--red:#ff7b86}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top right,#162b4b 0,#0a1020 42%);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:24px clamp(16px,4vw,42px);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}.logo{height:44px;width:44px;border-radius:14px;background:linear-gradient(135deg,#78b7ff,#8267f6);display:grid;place-items:center;color:#071124;font-weight:900;font-size:20px}.brand h1{font-size:20px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.badge{border:1px solid #6c5830;background:#2c2518;color:var(--amber);padding:7px 11px;border-radius:999px;font-size:12px}
+main{padding:24px clamp(16px,4vw,42px);max-width:1500px;margin:auto}.welcome{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:20px}.welcome h2{margin:0;font-size:clamp(24px,4vw,34px)}.welcome p{color:var(--muted);margin:6px 0 0}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}.card,.panel{background:linear-gradient(160deg,rgba(20,31,53,.96),rgba(13,22,39,.96));border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:0 10px 30px #0002}.metric-label{color:var(--muted);font-size:13px}.metric{font-size:28px;font-weight:750;margin-top:5px}.metric-note{font-size:12px;color:var(--muted);margin-top:3px}
+.layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.8fr);gap:18px}.panel h3{margin:0 0 4px;font-size:17px}.sub{color:var(--muted);font-size:12px;margin:0 0 16px}
+.depts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.dept{border:1px solid var(--line);border-radius:12px;padding:13px;background:#0c1526}.depttop{display:flex;gap:10px;align-items:center}.icon{width:36px;height:36px;border-radius:10px;background:#1b2c49;display:grid;place-items:center;font-size:18px;flex-shrink:0}.dept h4{font-size:13px;margin:0}.dept small{color:var(--muted);font-size:11px}.status{display:inline-flex;align-items:center;gap:6px;font-size:11px;margin-top:12px;color:var(--amber)}.dot{width:7px;height:7px;border-radius:50%;background:var(--amber)}.dept p{color:var(--muted);font-size:12px;margin:8px 0 0}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.btn{border:1px solid var(--line);background:#17243b;color:var(--text);padding:9px 12px;border-radius:9px;cursor:pointer;font-weight:650}.btn:hover{filter:brightness(1.18)}.btn.primary{background:#315eab;border-color:#4c80d6}.btn.danger{background:#3a202b;border-color:#75404b}.loglist{display:flex;flex-direction:column;gap:10px}.log{padding:11px;border:1px solid var(--line);border-radius:10px;background:#0c1526}.log strong{font-size:12px}.log p{font-size:12px;color:var(--muted);margin:4px 0}.time{font-size:10px;color:#7284a5}.note{margin-top:18px;padding:13px 15px;border-radius:12px;background:#282316;border:1px solid #5b4a2b;color:#e9d5a0;font-size:12px}.footer{color:var(--muted);font-size:11px;margin-top:22px;text-align:center}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:1fr}}
+@media(max-width:560px){.grid,.depts{grid-template-columns:1fr}.metric{font-size:24px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo">E</div><div><h1>EVOX AI Control Room</h1><p>Personal AI Content Intelligence · Prototype v0.1</p></div></div>
+  <div class="badge">● DEMO MODE — Agents not connected</div>
+</header>
+<main>
+  <section class="welcome"><div><h2>Command Center</h2><p>One place to plan, monitor, and eventually control your content agents.</p></div><div class="badge">12 Departments · Future-ready layout</div></section>
+  <section class="grid">
+    <div class="card"><div class="metric-label">Departments</div><div class="metric">12</div><div class="metric-note">Configured in this prototype</div></div>
+    <div class="card"><div class="metric-label">Live agents</div><div class="metric" id="liveCount">0</div><div class="metric-note">No real agents connected yet</div></div>
+    <div class="card"><div class="metric-label">Tasks completed</div><div class="metric" id="taskCount">0</div><div class="metric-note">Demo actions only</div></div>
+    <div class="card"><div class="metric-label">System health</div><div class="metric">Setup</div><div class="metric-note">Backend connection not configured</div></div>
+  </section>
+  <div class="layout">
+    <section class="panel">
+      <h3>Department Control</h3><p class="sub">Select a department to record a demo action in the activity log.</p>
+      <div class="depts" id="departments"></div>
+      <div class="controls"><button class="btn primary" id="runBtn">▶ Run demo task</button><button class="btn" id="pauseBtn">Ⅱ Pause demo</button><button class="btn danger" id="stopBtn">■ Stop demo</button></div>
+    </section>
+    <aside class="panel">
+      <h3>Activity Log</h3><p class="sub">Newest events appear first. Saved only in this browser session.</p>
+      <div class="loglist" id="logs"><div class="log"><strong>System initialized</strong><p>Dashboard loaded in demo mode. No external service has been started.</p><div class="time">Just now</div></div></div>
+      <div class="note"><strong>Important:</strong> These buttons demonstrate the interface only. They do not start or stop real AI agents yet. Real monitoring requires connecting a backend, agent runner, and persistent logs.</div>
+    </aside>
+  </div>
+  <div class="footer">EVOX · Built as a starter dashboard · No API keys or personal data required</div>
+</main>
+<script>
+const items=[
+['📈','Trend Research','Find emerging topics and public trend signals.'],
+['📰','News Intelligence','Collect and verify news sources.'],
+['📊','Content Analytics','Analyze available performance data.'],
+['👥','Audience Intelligence','Study audience questions and interests.'],
+['🔎','Competitor Intelligence','Review public competitor content.'],
+['💡','Topic Research','Build a distinct topic shortlist.'],
+['✍️','Original Script Writing','Draft original Bengali short-form scripts.'],
+['🎯','Hook & Title Studio','Create hooks and title variations.'],
+['🎬','Video Production','Prepare scenes and production prompts.'],
+['📢','SEO & Publishing','Prepare captions, hashtags, and metadata.'],
+['📈','Performance Analytics','Review published-content results.'],
+['🛡️','Quality Control','Check originality, accuracy, and format.']
+];
+let selected=0, tasks=0, paused=false, stopped=false;
+const dep=document.getElementById('departments');
+items.forEach((it,i)=>{const el=document.createElement('div');el.className='dept';el.innerHTML=`<div class="depttop"><div class="icon">${it[0]}</div><div><h4>${i+1}. ${it[1]}</h4><small>Not connected</small></div></div><div class="status"><span class="dot"></span><span id="state${i}">Not configured</span></div><p>${it[2]}</p><div class="controls"><button class="btn" data-select="${i}">Select</button></div>`;dep.appendChild(el)});
+function log(title,msg){const wrap=document.getElementById('logs');const el=document.createElement('div');el.className='log';el.innerHTML=`<strong>${title}</strong><p>${msg}</p><div class="time">${new Date().toLocaleTimeString()}</div>`;wrap.prepend(el)}
+dep.addEventListener('click',e=>{const b=e.target.closest('[data-select]');if(!b)return;selected=Number(b.dataset.select);log('Department selected',items[selected][1]+' selected. This is a UI demo; no agent ran.')});
+document.getElementById('runBtn').onclick=()=>{if(paused){log('Demo paused','Resume by clicking Run demo task.');return}if(stopped)stopped=false;tasks++;document.getElementById('taskCount').textContent=tasks;log('Demo task recorded',items[selected][1]+': demo action recorded. No real AI processing occurred.')};
+document.getElementById('pauseBtn').onclick=()=>{paused=!paused;document.getElementById('pauseBtn').textContent=paused?'▶ Resume demo':'Ⅱ Pause demo';log(paused?'Demo paused':'Demo resumed','Only the interface demo state changed; no real agent is running.')};
+document.getElementById('stopBtn').onclick=()=>{stopped=true;paused=false;document.getElementById('pauseBtn').textContent='Ⅱ Pause demo';log('Demo stopped','Interface demo stopped. No real agent process was running.')};
+</script>
+</body>
+</html>
